@@ -1,6 +1,4 @@
-Here's a sample `README.md` file for your Learning Management System (LMS) frontend project. You can customize it based on your specific requirements and project details:
 
----
 
 # Learning Management System (LMS) Frontend
 
