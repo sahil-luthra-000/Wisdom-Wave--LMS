@@ -8,20 +8,23 @@
   
     h2 {
       font-size: 24px;
-      color: #8a4baf;
-      text-align: center;
+      color: #00000099;
+      text-align: justify;
     }
   
     h4 {
       font-size: 21px;
-      color: #8a4baf;
-      text-align: center;
+      color: #00000080;
+      text-align: justify;
+      margin-left: 200px;
+      margin-right: 200px;
     }
   
     h5 {
       font-size: 20px;
-      color: #8a4baf;
+      color: #00000094;
       text-align: center;
+
     }
   
     a {
