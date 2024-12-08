@@ -83,6 +83,7 @@ const CourseDescription = ({ user }) => {
     const razorpay = new window.Razorpay(options);
 
     razorpay.open();
+    setLoading(false);
   };
 
   return (

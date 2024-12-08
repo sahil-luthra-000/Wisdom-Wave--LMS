@@ -127,7 +127,7 @@ const AdminCourses = ({ user }) => {
                   required
                 />
 
-                <label htmlFor="text">createdBy</label>
+                <label htmlFor="text">Created By</label>
                 <input
                   type="text"
                   value={createdBy}
@@ -147,7 +147,7 @@ const AdminCourses = ({ user }) => {
                   ))}
                 </select>
 
-                <label htmlFor="text">Duration</label>
+                <label htmlFor="text">Duration(In Weeks)</label>
                 <input
                   type="number"
                   value={duration}

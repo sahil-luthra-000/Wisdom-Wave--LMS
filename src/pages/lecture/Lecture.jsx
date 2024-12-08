@@ -246,6 +246,7 @@ const Lecture = ({ user }) => {
                         controls
                       ></video>
                     )}
+                    <br />
 
                     <button
                       disabled={btnLoading}
