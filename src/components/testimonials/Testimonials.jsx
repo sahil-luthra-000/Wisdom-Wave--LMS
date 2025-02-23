@@ -1,62 +1,89 @@
 import React from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 import "./testimonials.css";
 
+const testimonialsData = [
+  {
+    id: 1,
+    name: "Alice Johnson",
+    position: "Student",
+    message: "This platform is amazing! The courses are well-structured and engaging.",
+    image: "https://randomuser.me/api/portraits/women/45.jpg",
+  },
+  {
+    id: 2,
+    name: "Michael Brown",
+    position: "Educator",
+    message: "A fantastic LMS with seamless functionality. My students love it!",
+    image: "https://randomuser.me/api/portraits/men/32.jpg",
+  },
+  {
+    id: 3,
+    name: "Sophia Martinez",
+    position: "Student",
+    message: "The interactive lessons have truly helped me improve my skills.",
+    image: "https://randomuser.me/api/portraits/women/50.jpg",
+  },
+  {
+    id: 4,
+    name: "Daniel White",
+    position: "Instructor",
+    message: "Creating and managing courses has never been easier!",
+    image: "https://randomuser.me/api/portraits/men/40.jpg",
+  },
+  {
+    id: 5,
+    name: "Emily Clark",
+    position: "Learner",
+    message: "A great platform with so many learning opportunities!",
+    image: "https://randomuser.me/api/portraits/women/60.jpg",
+  },
+  {
+    id: 6,
+    name: "James Anderson",
+    position: "Student",
+    message: "I love how easy it is to track my progress and interact with instructors.",
+    image: "https://randomuser.me/api/portraits/men/55.jpg",
+  },
+];
+
 const Testimonials = () => {
-  const testimonialsData = [
-    {
-      id: 1,
-      name: "John Doe",
-      position: "Student",
-      message:
-        "This platform helped me learn so effectively. The courses are amazing and the instructors are top-notch.",
-      image:
-        "https://th.bing.com/th?q=Current+Bachelor&w=120&h=120&c=1&rs=1&qlt=90&cb=1&dpr=1.3&pid=InlineBlock&mkt=en-IN&cc=IN&setlang=en&adlt=moderate&t=1&mw=247",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      position: "Student",
-      message:
-        "I've learned more here than in any other place. The interactive lessons and quizzes make learning enjoyable.",
-      image:
-        "https://th.bing.com/th/id/OIP.GKAiW3oc2TWXVEeZAzrWOAHaJF?w=135&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-    {
-      id: 3,
-      name: "John Doe",
-      position: "Student",
-      message:
-        "This platform helped me learn so effectively. The courses are amazing and the instructors are top-notch.",
-      image:
-        "https://th.bing.com/th?q=Current+Bachelor&w=120&h=120&c=1&rs=1&qlt=90&cb=1&dpr=1.3&pid=InlineBlock&mkt=en-IN&cc=IN&setlang=en&adlt=moderate&t=1&mw=247",
-    },
-    {
-      id: 4,
-      name: "Jane Smith",
-      position: "Student",
-      message:
-        "I've learned more here than in any other place. The interactive lessons and quizzes make learning enjoyable.",
-      image:
-        "https://th.bing.com/th/id/OIP.GKAiW3oc2TWXVEeZAzrWOAHaJF?w=135&h=180&c=7&r=0&o=5&dpr=1.3&pid=1.7",
-    },
-  ];
   return (
     <section className="testimonials">
       <h2>What our students say</h2>
-      <div className="testmonials-cards">
-        {testimonialsData.map((e) => (
-          <div className="testimonial-card" key={e.id}>
-            <div className="student-image">
-              <img src={e.image} alt="" />
+      <Swiper
+        modules={[Navigation, Pagination, Autoplay]}
+        spaceBetween={20}
+        slidesPerView={3} // ✅ Shows 3 testimonials at a time
+        loop={true} // ✅ Enables infinite loop
+        autoplay={{ delay: 2500, disableOnInteraction: false }} // ✅ Auto-scroll every 2.5s
+        navigation // ✅ Show navigation arrows
+        pagination={{ clickable: true }} // ✅ Show dots below
+        breakpoints={{
+          768: { slidesPerView: 2 }, // 2 slides on tablets
+          1024: { slidesPerView: 3 }, // 3 slides on larger screens
+          1440: { slidesPerView: 4 }, // 4 slides on extra-large screens
+        }}
+      >
+        {testimonialsData.map((testimonial) => (
+          <SwiperSlide key={testimonial.id}>
+            <div className="testimonial-card">
+              <div className="student-image">
+                <img src={testimonial.image} alt={testimonial.name} />
+              </div>
+              <p className="message">{testimonial.message}</p>
+              <div className="info">
+                <p className="name">{testimonial.name}</p>
+                <p className="position">{testimonial.position}</p>
+              </div>
             </div>
-            <p className="message">{e.message}</p>
-            <div className="info">
-              <p className="name">{e.name}</p>
-              <p className="position">{e.position}</p>
-            </div>
-          </div>
+          </SwiperSlide>
         ))}
-      </div>
+      </Swiper>
     </section>
   );
 };
