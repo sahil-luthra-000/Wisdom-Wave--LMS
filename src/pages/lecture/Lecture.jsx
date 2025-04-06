@@ -6,6 +6,8 @@ import { server } from "../../main";
 import Loading from "../../components/loading/Loading";
 import toast from "react-hot-toast";
 import { TiTick } from "react-icons/ti";
+import { FaStar } from "react-icons/fa";
+import RatingModal from "../../components/Modal";
 
 const Lecture = ({ user }) => {
   const [lectures, setLectures] = useState([]);
@@ -13,6 +15,7 @@ const Lecture = ({ user }) => {
   const [loading, setLoading] = useState(true);
   const [lecLoading, setLecLoading] = useState(false);
   const [show, setShow] = useState(false);
+  const [showRatingModal, setShowRatingModal] = useState(false);
   const params = useParams();
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
@@ -20,11 +23,16 @@ const Lecture = ({ user }) => {
   const [video, setvideo] = useState("");
   const [videoPrev, setVideoPrev] = useState("");
   const [btnLoading, setBtnLoading] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [hover, setHover] = useState(0);
+  const [userRating, setUserRating] = useState(null);
+  const [averageRating, setAverageRating] = useState(null);
+  const [course, setCourse] = useState("");
 
   if (user && user.role !== "admin" && !user.subscription.includes(params.id))
     return navigate("/");
 
-  async function fetchLectures() {
+  const fetchLectures = async () => {
     try {
       const { data } = await axios.get(`${server}/api/lectures/${params.id}`, {
         headers: {
@@ -37,9 +45,9 @@ const Lecture = ({ user }) => {
       console.log(error);
       setLoading(false);
     }
-  }
+  };
 
-  async function fetchLecture(id) {
+  const fetchLecture = async (id) => {
     setLecLoading(true);
     try {
       const { data } = await axios.get(`${server}/api/lecture/${id}`, {
@@ -48,19 +56,19 @@ const Lecture = ({ user }) => {
         },
       });
       setLecture(data.lecture);
+      setUserRating(data.userRating);
+      setAverageRating(data.averageRating);
       setLecLoading(false);
     } catch (error) {
       console.log(error);
       setLecLoading(false);
     }
-  }
+  };
 
   const changeVideoHandler = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
-
     reader.readAsDataURL(file);
-
     reader.onloadend = () => {
       setVideoPrev(reader.result);
       setvideo(file);
@@ -68,14 +76,12 @@ const Lecture = ({ user }) => {
   };
 
   const submitHandler = async (e) => {
-    setBtnLoading(true);
     e.preventDefault();
+    setBtnLoading(true);
     const myForm = new FormData();
-
     myForm.append("title", title);
     myForm.append("description", description);
     myForm.append("file", video);
-
     try {
       const { data } = await axios.post(
         `${server}/api/course/${params.id}`,
@@ -86,7 +92,6 @@ const Lecture = ({ user }) => {
           },
         }
       );
-
       toast.success(data.message);
       setBtnLoading(false);
       setShow(false);
@@ -109,7 +114,6 @@ const Lecture = ({ user }) => {
             token: localStorage.getItem("token"),
           },
         });
-
         toast.success(data.message);
         fetchLectures();
       } catch (error) {
@@ -122,8 +126,9 @@ const Lecture = ({ user }) => {
   const [completedLec, setCompletedLec] = useState("");
   const [lectLength, setLectLength] = useState("");
   const [progress, setProgress] = useState([]);
+  const [feedback, setFeedback] = useState([]);
 
-  async function fetchProgress() {
+  const fetchProgress = async () => {
     try {
       const { data } = await axios.get(
         `${server}/api/user/progress?course=${params.id}`,
@@ -133,15 +138,23 @@ const Lecture = ({ user }) => {
           },
         }
       );
-
       setCompleted(data.courseProgressPercentage);
       setCompletedLec(data.completedLectures);
       setLectLength(data.allLectures);
       setProgress(data.progress);
+
+      // 👉 Show rating modal only if progress hits 100% and not already shown
+      if (
+        data.courseProgressPercentage === 100 &&
+        !userRating && // only if user hasn't rated yet
+        !showRatingModal
+      ) {
+        setShowRatingModal(true);
+      }
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const addProgress = async (id) => {
     try {
@@ -154,19 +167,50 @@ const Lecture = ({ user }) => {
           },
         }
       );
+      const updatedProgress = await fetchProgress();
+      // only show modal if it wasn't already shown and progress is 100%
+      if (
+        updatedProgress.courseProgressPercentage === 100 &&
+        !userRating &&
+        !showRatingModal
+      ) {
+        setShowRatingModal(true);
+      }
       console.log(data.message);
       fetchProgress();
+      setShowRatingModal(true); // Show modal when video ends
     } catch (error) {
       console.log(error);
     }
   };
 
-  console.log(progress);
-
   useEffect(() => {
     fetchLectures();
     fetchProgress();
   }, []);
+
+  const handleRatingSubmit = async (rating, feedback) => {
+    setCourse(lectures[0].course);
+    console.log(rating, feedback);
+    try {
+      const { data } = await axios.post(
+        `${server}/api/user/submit-rating`,
+        { courseId: lectures[0].course, rating, feedback },
+        {
+          headers: {
+            token: localStorage.getItem("token"),
+          },
+        }
+      );
+      toast.success(data.message);
+      setShowRatingModal(false);
+      // fetchLecture(lecture._id);
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to submit rating");
+    }
+  };
+
   return (
     <>
       {loading ? (
@@ -197,6 +241,7 @@ const Lecture = ({ user }) => {
                       ></video>
                       <h1>{lecture.title}</h1>
                       <h3>{lecture.description}</h3>
+                      <div className="rating-section"></div>
                     </>
                   ) : (
                     <h1>Please Select a Lecture</h1>
@@ -210,7 +255,6 @@ const Lecture = ({ user }) => {
                   {show ? "Close" : "Add Lecture +"}
                 </button>
               )}
-
               {show && (
                 <div className="lecture-form">
                   <h2>Add Lecture</h2>
@@ -222,7 +266,6 @@ const Lecture = ({ user }) => {
                       onChange={(e) => setTitle(e.target.value)}
                       required
                     />
-
                     <label htmlFor="text">Description</label>
                     <input
                       type="text"
@@ -230,14 +273,12 @@ const Lecture = ({ user }) => {
                       onChange={(e) => setDescription(e.target.value)}
                       required
                     />
-
                     <input
                       type="file"
                       placeholder="choose video"
                       onChange={changeVideoHandler}
                       required
                     />
-
                     {videoPrev && (
                       <video
                         src={videoPrev}
@@ -247,7 +288,6 @@ const Lecture = ({ user }) => {
                       ></video>
                     )}
                     <br />
-
                     <button
                       disabled={btnLoading}
                       type="submit"
@@ -258,13 +298,11 @@ const Lecture = ({ user }) => {
                   </form>
                 </div>
               )}
-
               {lectures && lectures.length > 0 ? (
                 lectures.map((e, i) => (
-                  <>
+                  <div key={e._id}>
                     <div
                       onClick={() => fetchLecture(e._id)}
-                      key={i}
                       className={`lecture-number ${
                         lecture._id === e._id && "active"
                       }`}
@@ -293,13 +331,18 @@ const Lecture = ({ user }) => {
                         Delete {e.title}
                       </button>
                     )}
-                  </>
+                  </div>
                 ))
               ) : (
                 <p>No Lectures Yet!</p>
               )}
             </div>
           </div>
+
+          {/* Rating Modal */}
+          {showRatingModal && (
+            <RatingModal handleRatingSubmit={handleRatingSubmit} />
+          )}
         </>
       )}
     </>
