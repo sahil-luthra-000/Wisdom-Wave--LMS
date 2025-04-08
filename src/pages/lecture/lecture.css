@@ -91,7 +91,13 @@
     margin: 3px auto;
     text-align: center;
     color: white;
+    
   }
+    @media (max-width: 768px) {
+      .progress {
+        width: 100%;
+      }
+    }
  
   .rating-section {
     margin-top: 20px;
