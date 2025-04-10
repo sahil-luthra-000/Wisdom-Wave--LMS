@@ -26,7 +26,7 @@ const Home = () => {
       setIsLoggedIn(true);
 
       axios
-        .get("http://localhost:5000/api/recommendations", {
+        .get(`${server}/api/recommendations`, {
           headers: {
             token: localStorage.getItem("token"),
           },
