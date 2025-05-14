@@ -25,32 +25,3 @@
   line-height: 1.6;
   color: var(--text-secondary, #555);
 }
-.about {
-  padding: 80px 20px;
- background:radial-gradient(circle, #4b367c 0%, #2b1d4a 80%);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.about-content {
-  max-width: 900px;
-  margin: auto;
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 50px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-.heading {
-  font-size: 40px;
-  font-weight: 700;
-  margin-bottom: 30px;
-  color: #0a0a23;
-  text-align: center;
-}
-
-.para {
-  font-size: 20px;
-  line-height: 1.8;
-  color: #333333;
-  text-align: justify;
-}
