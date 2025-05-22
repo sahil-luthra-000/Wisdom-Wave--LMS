@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./lecture.css";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import { server } from "../../main";
 import Loading from "../../components/loading/Loading";
@@ -10,6 +10,7 @@ import { FaStar } from "react-icons/fa";
 import RatingModal from "../../components/Modal";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import LiveClass from "../../components/LiveClass";
 
 const Lecture = ({ user }) => {
   const [lectures, setLectures] = useState([]);
@@ -30,6 +31,8 @@ const Lecture = ({ user }) => {
   const [userRating, setUserRating] = useState(null);
   const [averageRating, setAverageRating] = useState(null);
   const [course, setCourse] = useState("");
+
+  const roomName = `live-class-${params.id}`;
 
   if (user && user.role !== "admin" && !user.subscription.includes(params.id))
     return navigate("/");
@@ -243,17 +246,17 @@ const Lecture = ({ user }) => {
                         onEnded={() => addProgress(lecture._id)}
                       ></video>
                       <h1>{lecture.title}</h1>
-                       <div className="about1">
-                <div className="about-content1">
-                  <p className="para">
-                    <div
-                      className="content"
-                      style={{ textAlign: "justify" }}
-                      dangerouslySetInnerHTML={{ __html: lecture.description }}
-                    ></div>
-                  </p>
-                </div>
-              </div>
+                      <div className="about1">
+                        <div className="about-content1">
+                          <p className="para">
+                            <div
+                              className="content"
+                              style={{ textAlign: "justify" }}
+                              dangerouslySetInnerHTML={{ __html: lecture.description }}
+                            ></div>
+                          </p>
+                        </div>
+                      </div>
                       <div className="rating-section"></div>
                     </>
                   ) : (
@@ -316,9 +319,8 @@ const Lecture = ({ user }) => {
                   <div key={e._id}>
                     <div
                       onClick={() => fetchLecture(e._id)}
-                      className={`lecture-number ${
-                        lecture._id === e._id && "active"
-                      }`}
+                      className={`lecture-number ${lecture._id === e._id && "active"
+                        }`}
                     >
                       {i + 1}. {e.title}{" "}
                       {progress[0] &&
@@ -351,6 +353,12 @@ const Lecture = ({ user }) => {
               )}
             </div>
           </div>
+          <Link to={`/live-classroom/${roomName}`}>
+            <button className="join-live-btn">
+              🎥 Join Live Class
+            </button>
+          </Link>
+
 
           {/* Rating Modal */}
           {showRatingModal && (
